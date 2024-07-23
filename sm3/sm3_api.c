@@ -9,8 +9,6 @@
 #include <string.h>
 #include "sm3_api.h"
 
-#include <stdio.h>
-
 //	pointer to the compression function
 void (*sm3_compress)(uint32_t *sp, const uint32_t *mp, size_t n)
 	= &sm3_cf256_zvksh_lmul1;		//	vector version, lmul1
@@ -40,6 +38,7 @@ void sm3_256(uint8_t *md, const void *in, size_t inlen)
 
 	while (inlen >= 64) {					//	full blocks
 		i = inlen & ~63;
+		//	(assigns aligned input)
 		sm3_compress(s, (uint32_t *) p, i);
 		inlen -= i;
 		p += i;
