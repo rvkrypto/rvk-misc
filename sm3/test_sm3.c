@@ -39,9 +39,9 @@ int test_sm3_vec()
 	for (size_t i = 0; i < 1024; i++) {
 		in[i] = i & 0xFF;
 	}
-	cc = plat_get_instret();
+	cc = plat_get_cycle();
 	sm3_compress((uint32_t *) md, (uint32_t *) in, 1024);	// 16 blocks
-	cc = plat_get_instret() - cc;
+	cc = plat_get_cycle() - cc;
 	rvkat_dec("SM3 hash / 1024 B:", cc);
 
 	return fail;

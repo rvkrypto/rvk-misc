@@ -12,11 +12,11 @@
 #include "aes/aes_rv32zkned.h"
 #include "aes/aes_rv64zkned.h"
 
-//	count instret for 1024 bytes / 64 blocks
+//	count cycles for 1024 bytes / 64 blocks
 
-uint32_t test_aes_instret(void (*ciph)(uint8_t *dst, const uint8_t *src,
-						  size_t n, const uint32_t * rk),
-						  const uint32_t *rk)
+uint32_t test_aes_cycle(void (*ciph)(uint8_t *dst, const uint8_t *src,
+						size_t n, const uint32_t * rk),
+						const uint32_t *rk)
 {
 	uint8_t xt[1024];
 	uint32_t cc;
@@ -24,9 +24,9 @@ uint32_t test_aes_instret(void (*ciph)(uint8_t *dst, const uint8_t *src,
 	for (size_t i = 0; i < 1024; i++) {
 		xt[i] = i;
 	}
-	cc = plat_get_instret();
+	cc = plat_get_cycle();
 	ciph(xt, xt, 1024, rk);
-	cc = plat_get_instret() - cc;
+	cc = plat_get_cycle() - cc;
 
 	return cc;
 }
@@ -72,10 +72,10 @@ int test_aes128_ecb_tv(bool dec)
 	}
 
 	rvkat_dec("AES-128 ECB Encrypt / 1024 B:",
-		test_aes_instret(aes128_enc_ecb, rk));
+		test_aes_cycle(aes128_enc_ecb, rk));
 	if (dec) {
 		rvkat_dec("AES-128 ECB Decrypt / 1024 B:",
-			test_aes_instret(aes128_dec_ecb, rk));
+			test_aes_cycle(aes128_dec_ecb, rk));
 	}
 
 	return fail;
@@ -122,10 +122,10 @@ int test_aes192_ecb_tv(bool dec)
 	}
 
 	rvkat_dec("AES-192 ECB Encrypt / 1024 B:",
-		test_aes_instret(aes192_enc_ecb, rk));
+		test_aes_cycle(aes192_enc_ecb, rk));
 	if (dec) {
 		rvkat_dec("AES-192 ECB Decrypt / 1024 B:",
-			test_aes_instret(aes192_dec_ecb, rk));
+			test_aes_cycle(aes192_dec_ecb, rk));
 	}
 
 	return fail;
@@ -172,10 +172,10 @@ int test_aes256_ecb_tv(bool dec)
 	}
 
 	rvkat_dec("AES-256 ECB Encrypt / 1024 B:",
-		test_aes_instret(aes256_enc_ecb, rk));
+		test_aes_cycle(aes256_enc_ecb, rk));
 	if (dec) {
 		rvkat_dec("AES-256 ECB Decrypt / 1024 B:",
-			test_aes_instret(aes256_dec_ecb, rk));
+			test_aes_cycle(aes256_dec_ecb, rk));
 	}
 	return fail;
 }
