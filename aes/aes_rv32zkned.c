@@ -1,4 +1,4 @@
-//	aes_rvk32.c
+//	aes_rv32zkned.c
 //	2020-01-22	Markku-Juhani O. Saarinen <mjos@iki.fi> See LICENSE.
 
 //	=== FIPS 197 Algorithm Implementation for RV32 Krypto / AES32
@@ -13,8 +13,8 @@
 
 //	Encrypt rounds. Implements AES-128/192/256 depending on nr = {10,12,14}
 
-void aes_enc_rounds_rvk32(uint8_t ct[16], const uint8_t pt[16],
-						   const uint32_t rk[], int nr)
+void aes_enc_rounds_rv32zkned(uint8_t ct[16], const uint8_t pt[16],
+							  const uint32_t rk[], int nr)
 {
 	uint32_t t0, t1, t2, t3;				//	even round state registers
 	uint32_t u0, u1, u2, u3;				//	odd round state registers
@@ -115,27 +115,33 @@ void aes_enc_rounds_rvk32(uint8_t ct[16], const uint8_t pt[16],
 
 //	Wrappers
 
-void aes128_enc_ecb_rvk32(uint8_t ct[16], const uint8_t pt[16],
-						   const uint32_t rk[AES128_RK_WORDS])
+void aes128_enc_ecb_rv32zkned(uint8_t *ct, const uint8_t *pt, size_t n,
+							  const uint32_t rk[AES128_RK_WORDS])
 {
-	aes_enc_rounds_rvk32(ct, pt, rk, AES128_ROUNDS);
+	for (size_t i = 0; i < n; i += 16) {
+		aes_enc_rounds_rv32zkned(ct + i, pt + i, rk, AES128_ROUNDS);
+	}
 }
 
-void aes192_enc_ecb_rvk32(uint8_t ct[16], const uint8_t pt[16],
-						   const uint32_t rk[AES192_RK_WORDS])
+void aes192_enc_ecb_rv32zkned(uint8_t *ct, const uint8_t *pt, size_t n,
+							  const uint32_t rk[AES192_RK_WORDS])
 {
-	aes_enc_rounds_rvk32(ct, pt, rk, AES192_ROUNDS);
+	for (size_t i = 0; i < n; i += 16) {
+		aes_enc_rounds_rv32zkned(ct + i, pt + i, rk, AES192_ROUNDS);
+	}
 }
 
-void aes256_enc_ecb_rvk32(uint8_t ct[16], const uint8_t pt[16],
-						   const uint32_t rk[AES256_RK_WORDS])
+void aes256_enc_ecb_rv32zkned(uint8_t *ct, const uint8_t *pt, size_t n,
+							  const uint32_t rk[AES256_RK_WORDS])
 {
-	aes_enc_rounds_rvk32(ct, pt, rk, AES256_ROUNDS);
+	for (size_t i = 0; i < n; i += 16) {
+		aes_enc_rounds_rv32zkned(ct + i, pt + i, rk, AES256_ROUNDS);
+	}
 }
 
 //	Key schedule for AES-128 Encryption.
 
-void aes128_enc_key_rvk32(uint32_t rk[44], const uint8_t key[16])
+void aes128_enc_key_rv32zkned(uint32_t rk[44], const uint8_t key[16])
 {
 	//	AES Round Constants
 	const uint8_t aes_rcon[] = {
@@ -176,7 +182,7 @@ void aes128_enc_key_rvk32(uint32_t rk[44], const uint8_t key[16])
 
 //	Key schedule for AES-192 encryption.
 
-void aes192_enc_key_rvk32(uint32_t rk[52], const uint8_t key[24])
+void aes192_enc_key_rv32zkned(uint32_t rk[52], const uint8_t key[24])
 {
 	//	AES Round Constants
 	const uint8_t aes_rcon[] = {
@@ -223,7 +229,7 @@ void aes192_enc_key_rvk32(uint32_t rk[52], const uint8_t key[24])
 
 //	Key schedule for AES-256 encryption.
 
-void aes256_enc_key_rvk32(uint32_t rk[60], const uint8_t key[32])
+void aes256_enc_key_rv32zkned(uint32_t rk[60], const uint8_t key[32])
 {
 	//	AES Round Constants
 	const uint8_t aes_rcon[] = {
@@ -287,8 +293,8 @@ void aes256_enc_key_rvk32(uint32_t rk[60], const uint8_t key[32])
 
 //	Decrypt rounds. Implements AES-128/192/256 depending on nr = {10,12,14}
 
-void aes_dec_rounds_rvk32(uint8_t pt[16], const uint8_t ct[16],
-						   const uint32_t rk[], int nr)
+void aes_dec_rounds_rv32zkned(uint8_t pt[16], const uint8_t ct[16],
+							  const uint32_t rk[], int nr)
 {
 	uint32_t t0, t1, t2, t3;				//	even round state registers
 	uint32_t u0, u1, u2, u3;				//	odd round state registers
@@ -389,22 +395,27 @@ void aes_dec_rounds_rvk32(uint8_t pt[16], const uint8_t ct[16],
 
 //	Wrappers
 
-void aes128_dec_ecb_rvk32(uint8_t pt[16], const uint8_t ct[16],
+void aes128_dec_ecb_rv32zkned(uint8_t *, const uint8_t *ct, size_t n,
 						   const uint32_t rk[AES128_RK_WORDS])
 {
-	aes_dec_rounds_rvk32(pt, ct, rk, AES128_ROUNDS);
+	for (size_t i = 0; i < n; i += 16) {
+		aes_dec_rounds_rv32zkned(pt + i, ct + i, rk, AES128_ROUNDS);
+	}
 }
 
-void aes192_dec_ecb_rvk32(uint8_t pt[16], const uint8_t ct[16],
+void aes192_dec_ecb_rv32zkned(uint8_t *, const uint8_t *ct, size_t n,
 						   const uint32_t rk[AES192_RK_WORDS])
 {
-	aes_dec_rounds_rvk32(pt, ct, rk, AES192_ROUNDS);
+	for (size_t i = 0; i < n; i += 16) {
+		aes_dec_rounds_rv32zkned(pt + i, ct + i, rk, AES192_ROUNDS);
 }
 
-void aes256_dec_ecb_rvk32(uint8_t pt[16], const uint8_t ct[16],
+void aes256_dec_ecb_rv32zkned(uint8_t *, const uint8_t *ct, size_t n,
 						   const uint32_t rk[AES256_RK_WORDS])
 {
-	aes_dec_rounds_rvk32(pt, ct, rk, AES256_ROUNDS);
+	for (size_t i = 0; i < n; i += 16) {
+		aes_dec_rounds_rv32zkned(pt + i, ct + i, rk, AES256_ROUNDS);
+	}
 }
 
 //	Helper: apply inverse mixcolumns to a vector
@@ -433,7 +444,7 @@ void rvk32_dec_invmc(uint32_t * v, size_t len)
 
 //	Key schedule for AES-128 decryption.
 
-void aes128_dec_key_rvk32(uint32_t rk[44], const uint8_t key[16])
+void aes128_dec_key_rv32zkned(uint32_t rk[44], const uint8_t key[16])
 {
 	//	create an encryption key and modify middle rounds
 	aes128_enc_key(rk, key);
@@ -442,7 +453,7 @@ void aes128_dec_key_rvk32(uint32_t rk[44], const uint8_t key[16])
 
 //	Key schedule for AES-192 decryption.
 
-void aes192_dec_key_rvk32(uint32_t rk[52], const uint8_t key[24])
+void aes192_dec_key_rv32zkned(uint32_t rk[52], const uint8_t key[24])
 {
 	//	create an encryption key and modify middle rounds
 	aes192_enc_key(rk, key);
@@ -451,7 +462,7 @@ void aes192_dec_key_rvk32(uint32_t rk[52], const uint8_t key[24])
 
 //	Key schedule for AES-256 decryption.
 
-void aes256_dec_key_rvk32(uint32_t rk[60], const uint8_t key[32])
+void aes256_dec_key_rv32zkned(uint32_t rk[60], const uint8_t key[32])
 {
 	//	create an encryption key and modify middle rounds
 	aes256_enc_key(rk, key);

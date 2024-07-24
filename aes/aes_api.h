@@ -11,6 +11,7 @@
 extern "C" {
 #endif
 
+#include <stddef.h>
 #include <stdint.h>
 
 //	number of rounds
@@ -36,13 +37,13 @@ extern void (*aes256_enc_key)(uint32_t rk[AES256_RK_WORDS],
 
 //	Encrypt a block
 
-extern void (*aes128_enc_ecb)(uint8_t ct[16], const uint8_t pt[16],
+extern void (*aes128_enc_ecb)(uint8_t *ct, const uint8_t *pt, size_t n,
 							  const uint32_t rk[AES128_RK_WORDS]);
 
-extern void (*aes192_enc_ecb)(uint8_t ct[16], const uint8_t pt[16],
+extern void (*aes192_enc_ecb)(uint8_t *ct, const uint8_t *pt, size_t n,
 							  const uint32_t rk[AES192_RK_WORDS]);
 
-extern void (*aes256_enc_ecb)(uint8_t ct[16], const uint8_t pt[16],
+extern void (*aes256_enc_ecb)(uint8_t *ct, const uint8_t *pt, size_t n,
 							  const uint32_t rk[AES256_RK_WORDS]);
 
 //	Set decryption key
@@ -56,13 +57,13 @@ extern void (*aes256_dec_key)(uint32_t rk[AES256_RK_WORDS],
 
 //	Decrypt a block
 
-extern void (*aes128_dec_ecb)(uint8_t pt[16], const uint8_t ct[16],
+extern void (*aes128_dec_ecb)(uint8_t *pt, const uint8_t *ct, size_t n,
 							  const uint32_t rk[AES128_RK_WORDS]);
 
-extern void (*aes192_dec_ecb)(uint8_t pt[16], const uint8_t ct[16],
+extern void (*aes192_dec_ecb)(uint8_t *pt, const uint8_t *ct, size_t n,
 							  const uint32_t rk[AES192_RK_WORDS]);
 
-extern void (*aes256_dec_ecb)(uint8_t pt[16], const uint8_t ct[16],
+extern void (*aes256_dec_ecb)(uint8_t *pt, const uint8_t *ct, size_t n,
 							  const uint32_t rk[AES256_RK_WORDS]);
 
 #ifdef __cplusplus

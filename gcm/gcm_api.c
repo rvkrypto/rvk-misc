@@ -38,20 +38,20 @@ static void aes_gcm_body(uint8_t * dst, uint8_t tag[16],
 						 const uint8_t * src, size_t len,
 						 const uint8_t iv[12], const uint32_t rk[],
 						 void (*enc_ecb)(uint8_t * ct, const uint8_t * pt,
-							const uint32_t * rk), int enc_flag)
+						 size_t n, const uint32_t * rk), int enc_flag)
 {
 	size_t i, ctr;
 	gf128_t b, c, z, h, t, p;
 
 	h.d[0] = 0;								//	h = AES_k(0)
 	h.d[1] = 0;
-	enc_ecb(h.b, h.b, rk);
+	enc_ecb(h.b, h.b, 16, rk);
 	ghash_rev(&h);
 
 	ctr = 0;								//	counter value
 	memcpy(p.b, iv, 12);					//	J0
 	p.w[3] = __builtin_bswap32(++ctr);		//	big-endian counter
-	enc_ecb(t.b, p.b, rk);					//	first AES_k(IV | 1) for tag
+	enc_ecb(t.b, p.b, 16, rk);				//	first AES_k(IV | 1) for tag
 
 	z.d[0] = 0;								//	initialize GHASH result
 	z.d[1] = 0;
@@ -61,7 +61,7 @@ static void aes_gcm_body(uint8_t * dst, uint8_t tag[16],
 		i = len;
 		while (i >= 16) {					//	full block
 			p.w[3] = __builtin_bswap32(++ctr);
-			enc_ecb(c.b, p.b, rk);
+			enc_ecb(c.b, p.b, 16, rk);
 			memcpy(b.b, src, 16);			//	load plaintext
 			c.d[0] ^= b.d[0];
 			c.d[1] ^= b.d[1];
@@ -74,7 +74,7 @@ static void aes_gcm_body(uint8_t * dst, uint8_t tag[16],
 
 		if (i > 0) {						//	partial block
 			p.w[3] = __builtin_bswap32(++ctr);
-			enc_ecb(c.b, p.b, rk);
+			enc_ecb(c.b, p.b, 16, rk);
 			memcpy(b.b, src, i);			//	load plaintext
 			c.d[0] ^= b.d[0];
 			c.d[1] ^= b.d[1];
@@ -88,7 +88,7 @@ static void aes_gcm_body(uint8_t * dst, uint8_t tag[16],
 		i = len;
 		while (i >= 16) {					//	full block
 			p.w[3] = __builtin_bswap32(++ctr);
-			enc_ecb(b.b, p.b, rk);
+			enc_ecb(b.b, p.b, 16, rk);
 			memcpy(c.b, src, 16);			//	load ciphertext
 			b.d[0] ^= c.d[0];
 			b.d[1] ^= c.d[1];
@@ -101,7 +101,7 @@ static void aes_gcm_body(uint8_t * dst, uint8_t tag[16],
 
 		if (i > 0) {						//	partial block
 			p.w[3] = __builtin_bswap32(++ctr);
-			enc_ecb(b.b, p.b, rk);
+			enc_ecb(b.b, p.b, 16, rk);
 			memcpy(c.b, src, i);
 			b.d[0] ^= c.d[0];
 			b.d[1] ^= c.d[1];
@@ -127,7 +127,7 @@ static int aes_gcm_vfy(uint8_t * m,
 					   const uint8_t * c, size_t clen,
 					   const uint8_t iv[12], const uint32_t rk[],
 					   void (*enc_ecb)(uint8_t * ct, const uint8_t * pt,
-									   const uint32_t * rk))
+									   size_t n, const uint32_t * rk))
 {
 	size_t i;
 	uint8_t tag[16], x;
